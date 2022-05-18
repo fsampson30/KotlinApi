@@ -32,6 +32,11 @@ class MainActivity : AppCompatActivity() {
             Log.d("FLAVIO", popularMovies[0].title)
         }
 
+        movieViewModel.fetchTopRatedMovies()
+        movieViewModel.topRated.observe(this) { topRated ->
+            Log.d("FLAVIO", topRated[0].title)
+        }
+
         movieViewModel.error.observe(this) { error ->
             Toast.makeText(this, error, Toast.LENGTH_SHORT ).show()
         }

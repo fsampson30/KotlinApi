@@ -9,4 +9,7 @@ interface ApiService {
 
     @GET("movie/popular")
     fun getPopularMovies(@Query("api_key") apiKey: String) :Observable<PopularMoviesReponse>
+
+    @GET("movie/top_rated")
+    fun getTopRatedMovies(@Query("api_key") apiKey: String) : Observable<PopularMoviesReponse>
 }

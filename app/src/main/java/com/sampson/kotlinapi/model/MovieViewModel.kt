@@ -9,16 +9,20 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-class MovieViewModel (private val movieRepository: MovieRepository) : ViewModel(){
+class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel() {
 
     private val popularMoviesLiveData = MutableLiveData<List<Movie>>()
     private val errorLiveData = MutableLiveData<String>()
+    private val topRatedMoviesLiveData = MutableLiveData<List<Movie>>()
 
     val popularMovies: LiveData<List<Movie>>
-    get() = popularMoviesLiveData
+        get() = popularMoviesLiveData
 
-    val error:LiveData<String>
-    get() = errorLiveData
+    val error: LiveData<String>
+        get() = errorLiveData
+
+    val topRated: LiveData<List<Movie>>
+        get() = topRatedMoviesLiveData
 
     private var disposable = CompositeDisposable()
 
@@ -29,9 +33,23 @@ class MovieViewModel (private val movieRepository: MovieRepository) : ViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 popularMoviesLiveData.postValue(it)
-                Log.d("FLAVIO", it[0].title)
-            }, {error ->
-        Log.d("ModelViewModel", "error encountered: ${error.localizedMessage}")}))
+            }, { error ->
+                Log.d("ModelViewModel", "error encountered: ${error.localizedMessage}")
+            })
+        )
+    }
+
+    fun fetchTopRatedMovies() {
+        disposable.add(movieRepository.fetchTopRated()
+            .subscribeOn(Schedulers.io())
+            .map { it.results }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                topRatedMoviesLiveData.postValue(it)
+            }, { error ->
+                Log.d("ModelViewModel", "error encountered: ${error.localizedMessage}")
+            })
+        )
     }
 
     override fun onCleared() {
