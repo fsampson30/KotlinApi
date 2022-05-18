@@ -4,12 +4,18 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.sampson.kotlinapi.controller.MovieApplication
 import com.sampson.kotlinapi.model.MovieViewModel
+import com.sampson.kotlinapi.model.MovieViewModelFactory
 
 class MainActivity : AppCompatActivity() {
+
+    private val movieViewModel: MovieViewModel by viewModels {
+        MovieViewModelFactory((application as MovieApplication).movieRepository)
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,13 +26,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getMovies() {
-        val movieRepository = (application as MovieApplication).movieRepository
-        val movieViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory{
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return MovieViewModel(movieRepository) as T
-            }
 
-        }).get(MovieViewModel::class.java)
         movieViewModel.fetchPopularMovies()
         movieViewModel.popularMovies.observe(this) { popularMovies ->
             Log.d("FLAVIO", popularMovies[0].title)

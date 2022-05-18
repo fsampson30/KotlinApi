@@ -4,10 +4,12 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.sampson.kotlinapi.controller.MovieRepository
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.lang.IllegalArgumentException
 
 class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel() {
 
@@ -56,4 +58,14 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
         super.onCleared()
         disposable.dispose()
     }
+}
+
+class MovieViewModelFactory(private val repository: MovieRepository): ViewModelProvider.Factory{
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(MovieViewModel::class.java)){
+            return MovieViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel Class")
+    }
+
 }
